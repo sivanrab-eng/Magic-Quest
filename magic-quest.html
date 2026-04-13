@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>הארי פוטר: המסע הקסום ⚡</title>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-6SEP061BQ3"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-6SEP061BQ3');
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Noto+Serif+Hebrew:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --gold: #d4a843; --slate: #0b0e1a; --green: #4ade80; --red: #f87171; --blue: #60a5fa; }
+  * { box-sizing: border-box; }
+  body { font-family: 'Noto Serif Hebrew', serif; background: var(--slate); color: #e2e8f0; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; background-image: radial-gradient(ellipse at 20% 50%, rgba(212,168,67,0.04) 0%, transparent 50%), radial-gradient(ellipse at 80% 20%, rgba(100,100,200,0.05) 0%, transparent 50%); }
+  header { padding: 1.5rem 1.5rem 0.5rem; text-align: center; width: 100%; max-width: 600px; }
+  h1 { font-family: 'Cinzel Decorative'; color: var(--gold); text-shadow: 0 0 15px rgba(212,168,67,0.5); margin: 0; font-size: 1.5rem; }
+  .score-bar { display: flex; justify-content: space-between; align-items: center; max-width: 600px; width: 90%; padding: 0.6rem 1rem; margin: 0.5rem 0; background: rgba(21,26,46,0.9); border: 1px solid rgba(212,168,67,0.3); border-radius: 12px; font-size: 0.9rem; }
+  .score-bar .points { color: var(--gold); font-weight: bold; }
+  .score-bar .house { color: #94a3b8; }
+  .score-bar .timer-display { color: var(--blue); font-weight: bold; min-width: 45px; text-align: center; }
+  .timer-urgent { color: var(--red) !important; animation: pulse 0.5s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .game-container { max-width: 600px; width: 90%; background: rgba(21, 26, 46, 0.85); backdrop-filter: blur(10px); border: 2px solid var(--gold); border-radius: 20px; padding: 2rem; box-shadow: 0 20px 60px rgba(0,0,0,0.7); margin-bottom: 2rem; }
+  .scene-fade { animation: fadeIn 0.5s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes shakeX { 0%,100%{ transform: translateX(0); } 25%{ transform: translateX(-6px); } 75%{ transform: translateX(6px); } }
+  #emoji-header { font-size: 3rem; text-align: center; margin-bottom: 1rem; }
+  .speaker { color: var(--gold); font-weight: bold; font-size: 1rem; margin-bottom: 0.3rem; display: none; }
+  .story-text { font-size: 1.25rem; line-height: 1.75; margin-bottom: 1.5rem; color: #cbd5e1; min-height: 60px; }
+  .story-text .dialogue { color: #e2e8f0; font-style: italic; }
+  .choices-grid { display: none; flex-direction: column; gap: 1rem; }
+  .choice-btn { background: rgba(212,168,67,0.1); border: 1px solid var(--gold); color: var(--gold); padding: 1rem; border-radius: 12px; cursor: pointer; font-size: 1.05rem; transition: all 0.3s; text-align: right; font-weight: bold; font-family: 'Noto Serif Hebrew', serif; }
+  .choice-btn:hover { background: var(--gold); color: black; transform: scale(1.02); }
+  .choice-btn:active { transform: scale(0.98); }
+  .spell-section { display: none; text-align: center; }
+  #spell-input { padding: 14px; border-radius: 10px; border: 2px solid var(--gold); background: #1e293b; color: white; width: 85%; text-align: center; font-size: 1.2rem; margin-bottom: 0.8rem; outline: none; font-family: 'Noto Serif Hebrew', serif; transition: border-color 0.3s, box-shadow 0.3s; }
+  #spell-input:focus { box-shadow: 0 0 15px rgba(212,168,67,0.3); }
+  .hint-box { background: rgba(212,168,67,0.12); border: 1px dashed var(--gold); padding: 10px; border-radius: 8px; font-size: 0.9rem; color: var(--gold); margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .feedback { margin-top: 8px; font-weight: bold; min-height: 24px; }
+  .inventory { margin-top: 1.5rem; font-size: 0.9rem; color: var(--gold); border-top: 1px solid rgba(212,168,67,0.2); padding-top: 0.8rem; }
+  .shop-section { display: none; }
+  .shop-item { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem; border: 1px solid rgba(212,168,67,0.2); border-radius: 10px; margin-bottom: 0.6rem; }
+  .shop-item-info { text-align: right; }
+  .shop-item-name { color: #e2e8f0; font-weight: bold; }
+  .shop-item-desc { color: #94a3b8; font-size: 0.85rem; }
+  .shop-buy-btn { background: var(--gold); color: black; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: 'Noto Serif Hebrew', serif; font-size: 0.9rem; white-space: nowrap; }
+  .shop-buy-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .achievement-toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #1e293b, #0f172a); border: 2px solid var(--gold); padding: 1rem 1.5rem; border-radius: 12px; color: var(--gold); font-weight: bold; z-index: 100; animation: toastIn 0.4s ease, toastOut 0.4s ease 2.5s forwards; font-size: 1rem; }
+  @keyframes toastIn { from { opacity:0; transform: translateX(-50%) translateY(-30px); } to { opacity:1; transform: translateX(-50%) translateY(0); } }
+  @keyframes toastOut { from { opacity:1; } to { opacity:0; transform: translateX(-50%) translateY(-20px); } }
+</style>
+</head>
+<body>
+
+<header><h1>⚡ הארי פוטר: המסע הקסום</h1></header>
+
+<div class="score-bar" id="score-bar" style="display: none;">
+  <span class="house" id="house-label"></span>
+  <span class="points" id="points-display">0 נקודות</span>
+  <span class="timer-display" id="timer-display"></span>
+</div>
+
+<div class="game-container" id="game-container">
+  <div id="emoji-header">⚡</div>
+  <div class="speaker" id="speaker"></div>
+  <div class="story-text" id="story-display">המצנפת הממיינת הונחה על ראשך. היא לוחשת: <span class="dialogue">"הממ... אני רואה אומץ, אבל גם שאיפה... לאן ילך הלב שלך?"</span></div>
+  
+  <div class="choices-grid" id="main-choices" style="display: flex;">
+    <button class="choice-btn" onclick="chooseHouse('griffindor')">🦁 גריפינדור</button>
+    <button class="choice-btn" onclick="chooseHouse('slytherin')">🐍 סלית'רין</button>
+  </div>
+
+  <div class="spell-section" id="spell-section">
+    <div class="hint-box" id="hint-box">
+      <span>💡</span>
+      <span id="hint-text"></span>
+    </div>
+    <div class="hint-box" id="extra-hint-box" style="display: none; background: rgba(74,222,128,0.1); border-color: #4ade80; color: #4ade80;">
+      <span>🔮</span>
+      <span id="extra-hint-text"></span>
+    </div>
+    <button class="choice-btn" id="extra-hint-btn" onclick="showExtraHint()" style="width: auto; padding: 0.4rem 1.2rem; margin: 0 auto 0.8rem; display: block; font-size: 0.85rem; border-style: dashed;">רמז נוסף 🔮</button>
+    <input type="text" id="spell-input" placeholder="הקלידי את הלחש..." autocomplete="off">
+    <button class="choice-btn" style="width: auto; padding: 0.7rem 2rem; margin: 0 auto; display: block;" onclick="castSpell()">הטילי לחש! ✨</button>
+    <div id="feedback" class="feedback"></div>
+  </div>
+
+  <div class="choices-grid" id="branch-choices"></div>
+  <div class="shop-section" id="shop-section"></div>
+  <div class="inventory" id="inventory"></div>
+</div>
+
+<script>
+let inventory = [];
+let currentPath = "";
+let points = 0;
+let house = "";
+let timerInterval = null;
+let timerSeconds = 0;
+let usedExtraHint = false;
+let failedAttempts = 0;
+let achievements = [];
+let totalSpells = 0;
+let perfectSpells = 0;
+let currentHouse = "";
+let ownedItems = [];
+
+const shopItems = [
+  { id: "wand_holly", name: "שרביט עץ הולי", desc: "השרביט של הארי פוטר בכבודו ובעצמו", price: 30, emoji: "🪄" },
+  { id: "owl", name: "ינשוף לבן", desc: "כמו הדוויג — ישלח מכתבים בשבילך", price: 25, emoji: "🦉" },
+  { id: "broom", name: "מטאטא נימבוס 2000", desc: "המהיר בשוק. מושלם לקווידיץ'", price: 40, emoji: "🧹" },
+  { id: "cloak", name: "גלימת היעלמות", desc: "אף אחד לא יראה אותך. אף אחד.", price: 50, emoji: "👻" },
+  { id: "map", name: "מפת השודים", desc: "רואה את כל מי שנמצא בהוגוורטס", price: 35, emoji: "🗺️" },
+];
+
+const S = {
+  // ======= גריפינדור =======
+  griffindor_intro: {
+    type: "narrative", emoji: '🦁', speaker: 'המצנפת הממיינת',
+    text: '<span class="dialogue">"גריפינדור!"</span> צעקה המצנפת. שולחן גריפינדור התפוצץ במחיאות כפיים. הרמיוני חייכה אלייך, והארי הזיז כיסא. <span class="dialogue">"ברוכה הבאה,"</span> הוא לחש. <span class="dialogue">"כדאי שתהיי מוכנה — פה תמיד קורים דברים."</span>',
+    choices: [
+      { text: "ללכת עם האגריד שקורא לך מבחוץ", target: "hagrid_box" },
+      { text: "להישאר — הארי רוצה לספר משהו", target: "harry_secret" }
+    ]
+  },
+  hagrid_box: {
+    type: "narrative", emoji: '🧔', speaker: 'האגריד',
+    text: 'האגריד עומד ליד הדלת ומנופף בידיים הענקיות שלו. <span class="dialogue">"בואי מהר!"</span> הוא רוטן. <span class="dialogue">"מצאתי תיבה עתיקה של גודריק גריפינדור עצמו. אבל המנעול... לא נפתח בשום דרך."</span> הוא הראה לך תיבת עץ כהה עם אריה חקוק בזהב.',
+    choices: [{ text: "לנסות לפתוח בלחש", target: "griffindor_lock" }]
+  },
+  griffindor_lock: {
+    type: "spell", emoji: '🔐', speaker: 'האגריד',
+    text: 'האגריד מביט בך בציפייה. <span class="dialogue">"את בטח יודעת — הלחש הראשון שלומדים! פותח כל מנעול!"</span>',
+    hint: "מתחיל ב-'אלוהו' ונגמר ב-'מורה'",
+    hint2: "התשובה: אלוהומורה 🔓",
+    answer: "אלוהומורה", item: "מפתח מוזהב",
+    successText: 'קליק חד, והתיבה נפתחה! האגריד צחק. <span class="dialogue">"ידעתי שתצליחי!"</span> בפנים — מפה ישנה ומקופלת.',
+    choices: [
+      { text: "לפתוח את המפה", target: "open_map" },
+      { text: "לרוץ להראות להארי", target: "tell_harry" }
+    ]
+  },
+  harry_secret: {
+    type: "narrative", emoji: '⚡', speaker: 'הארי',
+    text: 'הארי התקרב ולחש: <span class="dialogue">"משהו מוזר קורה במגרש הקווידיץ\'. הסניץ\' נעלם, ובמקומו — ענן שחור. ניסיתי לעוף לתוכו, אבל שם חושך מוחלט."</span> הוא הסתכל ימינה ושמאלה. <span class="dialogue">"תבואי איתי?"</span>',
+    choices: [{ text: "ללכת למגרש עם הארי", target: "quidditch_dark" }]
+  },
+  open_map: {
+    type: "narrative", emoji: '🗺️',
+    text: 'פתחת את המפה, אבל פתאום — גל קור עצום. הנשימה שלך הפכה לעשן לבן. הנרות כבו אחד אחרי השני. מהצללים צף סוהרסן. הברדס השחור כיסה פנים חשוכות, ויד רקובה הושטה לעברך.',
+    choices: [{ text: "להילחם!", target: "dementor_fight" }]
+  },
+  dementor_fight: {
+    type: "spell", emoji: '👻',
+    text: 'הסוהרסן מתקרב. הקור חודר לעצמות. תחשבי על הזיכרון הכי שמח שלך — ותטילי את הלחש!',
+    hint: "שתי מילים: 'אקספקטו' + 'פטרונום'",
+    hint2: "כתבי: אקספקטו פטרונום ✨",
+    answer: "אקספקטו פטרונום", item: "מפת הקוסמים",
+    successText: 'אור כסוף מסנוור פרץ מהשרביט! חיית אור דהרה קדימה והסוהרסן נעלם בצרחה. ידייך רועדות, אבל המפה בטוחה.',
+    choices: [
+      { text: "לעקוב אחרי המפה למרתף", target: "basement_entrance" },
+      { text: "לספרייה — לפענח את המפה", target: "library_map" }
+    ]
+  },
+  tell_harry: {
+    type: "narrative", emoji: '⚡', speaker: 'הארי',
+    text: 'הארי עמד במגרש הקווידיץ\', מסתכל למעלה בדאגה. <span class="dialogue">"את רואה?"</span> הוא הצביע על ענן שחור. <span class="dialogue">"הסניץ\' נבלע שם. ניסיתי לעוף — שם חושך מוחלט."</span>',
+    choices: [{ text: "להאיר את הענן בלחש", target: "quidditch_dark" }]
+  },
+  quidditch_dark: {
+    type: "spell", emoji: '🌑', speaker: 'הארי',
+    text: '<span class="dialogue">"אם רק היה לנו אור..."</span> הארי הסתכל בך. <span class="dialogue">"רגע, את יודעת! מה הלחש שמדליק אור בשרביט?"</span>',
+    hint: "לחש האור — 4 אותיות",
+    hint2: "ל-ו-מ-ו-ס 💡",
+    answer: "לומוס", item: "סניץ' זהוב",
+    successText: 'קרן אור פרצה מהשרביט! הענן התפזר, וביניים — הסניץ\' הזהוב. הארי קפץ ותפס אותו. <span class="dialogue">"מדהים! קחי אותו,"</span> הוא חייך.',
+    choices: [
+      { text: "לטוס על המטאטא!", target: "victory_lap" },
+      { text: "לחזור לחדר המועדון", target: "party_intro" }
+    ]
+  },
+  victory_lap: {
+    type: "spell", emoji: '🎆',
+    text: 'טסת עם הארי מעל המגרש! התלמידים הריעו. <span class="dialogue">"בואי ניצור זיקוקים!"</span> צעק הארי ברוח. את צריכה גרסה חזקה של לחש האור!',
+    hint: "לחש האור + 'מקסימה'",
+    hint2: "כתבי: לומוס מקסימה ✨",
+    answer: "לומוס מקסימה", item: "גביע הבתים",
+    successText: 'זיקוקים בצבעי זהב ואדום מילאו את השמיים! כל הוגוורטס עצרה להסתכל. הרגע הזה — שלך.'
+  },
+  party_intro: {
+    type: "narrative", emoji: '🎉',
+    text: 'חדר המועדון רעש מחגיגות. פרד וג\'ורג\' הטילו קסמים על עוגות שירחפו באוויר. פתאום — מישהו הפיל בקבוק שיקוי! בזק סגול, והכל התחיל לרחף: כיסאות, ספרים, חתולים. <span class="dialogue">"אוי לא,"</span> מלמלה הרמיוני. <span class="dialogue">"מהר, לפני שמקגונגל תגיע!"</span>',
+    choices: [
+      { text: "לבטל את הקסם", target: "party_spell" },
+      { text: "לחפש מי אשם", target: "mystery_intro" }
+    ]
+  },
+  party_spell: {
+    type: "spell", emoji: '🎉', speaker: 'הרמיוני',
+    text: 'כיסא חלף מעל ראשך. חתול מיילל באוויר. <span class="dialogue">"את צריכה את הלחש שמבטל כשפים!"</span> צעקה הרמיוני. <span class="dialogue">"מהר!"</span>',
+    hint: "שתי מילים: 'פיניטה' + 'אינקנטטם'",
+    hint2: "כתבי: פיניטה אינקנטטם 🛑",
+    answer: "פיניטה אינקנטטם", item: "עוגת שוקולד מעופפת",
+    successText: 'הכל צנח! ספרים, כיסאות, עוגות — חזרו למקום. החתול נחת על רגליו. הרמיוני נשפה. <span class="dialogue">"תודה. כמעט קיבלנו עונש לשנה."</span>',
+    choices: [
+      { text: "לחגוג!", target: "gryff_finale" },
+      { text: "לחקור מי הפיל את השיקוי", target: "mystery_intro" }
+    ]
+  },
+  mystery_intro: {
+    type: "narrative", emoji: '🔍',
+    text: 'עקבות סגולות על הרצפה — צבע השיקוי. הן הובילו מחדר המועדון, דרך המסדרון, עד הקומה השלישית. המסדרון שדמבלדור אמר לא ללכת אליו. הדלת סגורה, אבל שמעת רעש מבפנים.',
+    choices: [{ text: "לפתוח את הדלת", target: "mystery_door" }]
+  },
+  mystery_door: {
+    type: "spell", emoji: '🚪',
+    text: 'הדלת נעולה. כמובן שהיא נעולה. אבל את כבר מכירה לחש מעולה למנעולים...',
+    hint: "הלחש הראשון שלמדת!",
+    hint2: "כתבי: אלוהומורה 🔓",
+    answer: "אלוהומורה", item: "יומן מסתורי",
+    successText: 'הדלת נפתחה בחריקה. חדר קטן ואפלולי, ובמרכזו — יומן ישן עם עטיפת עור. הדפים ריקים לחלוטין. או שזה מה שמישהו רוצה שתחשבי...',
+    choices: [{ text: "לחשוף את הכתב הנסתר", target: "diary_reveal" }]
+  },
+  diary_reveal: {
+    type: "spell", emoji: '📖',
+    text: 'דף אחרי דף — הכל ריק. אבל משהו אומר לך שמישהו כתב כאן דברים חשובים. יש לחש שחושף דיו נסתרת...',
+    hint: "מילה אחת: 'אפאריסיום'",
+    hint2: "כתבי: אפאריסיום 👁️",
+    answer: "אפאריסיום", item: "סוד של דמבלדור",
+    successText: 'אותיות כסופות צצו על הדפים, כמו כוכבים בלילה. הכתב של דמבלדור עצמו — רשימת לחשים שאף אחד לא מכיר!'
+  },
+  gryff_finale: {
+    type: "spell", emoji: '🏆', speaker: 'פרד ויזלי',
+    text: 'פרד וג\'ורג\' שיגרו זיקוק בצורת דרקון. הבעיה? הדרקון סירב להיעלם והתחיל לאכול וילונות. <span class="dialogue">"מישהו יעלים אותו!"</span> צעק פרד. <span class="dialogue">"לפני שיגיע לחדר השינה!"</span>',
+    hint: "'אוואנסקו' — מעלים דברים",
+    hint2: "כתבי: אוואנסקו 💨",
+    answer: "אוואנסקו", item: "זיקוק דרקון",
+    successText: 'הדרקון התפוצץ לאלף ניצוצות זהב! כולם מחאו כפיים. ג\'ורג\' קרץ. <span class="dialogue">"לא רע. לא רע בכלל."</span>'
+  },
+
+  // ======= סלית'רין =======
+  slytherin_intro: {
+    type: "narrative", emoji: '🐍', speaker: 'המצנפת הממיינת',
+    text: '<span class="dialogue">"סלית\'רין!"</span> אור ירקרק הבהב. דראקו מאלפוי מדד אותך במבט. <span class="dialogue">"עוד אחת חדשה,"</span> הוא אמר בלי לחייך. <span class="dialogue">"נראה אם את שווה משהו."</span> מאחוריו, סנייפ עקב אחרייך בעיניים שחורות.',
+    choices: [
+      { text: "ללכת לסנייפ — הוא קורא לך", target: "snape_task" },
+      { text: "לצאת לגינה עם דראקו", target: "garden_intro" }
+    ]
+  },
+  snape_task: {
+    type: "narrative", emoji: '🧪', speaker: 'סנייפ',
+    text: 'סנייפ הוביל אותך למרתפים. המעבדה הייתה חשוכה וריחה של עשבים מוזרים. צנצנות עם דברים מפחידים צפו על המדפים. <span class="dialogue">"צריך מרכיב מהארון,"</span> הוא אמר. <span class="dialogue">"אבל מישהו כיבה את הנרות בפנים. תסתדרי."</span>',
+    choices: [{ text: "להאיר את הארון", target: "snape_lumos" }]
+  },
+  snape_lumos: {
+    type: "spell", emoji: '🕯️', speaker: 'סנייפ',
+    text: 'חושך מוחלט בארון. אפילו את האף לא רואים. סנייפ מחכה מאחורייך. <span class="dialogue">"נו? את יודעת את לחש האור או לא?"</span>',
+    hint: "מתחיל ב-'ל' ונגמר ב-'ס'",
+    hint2: "ל-ו-מ-ו-ס 💡",
+    answer: "לומוס", item: "ניב בסיליסק",
+    successText: 'אור האיר את הארון! בין צנצנות עכורות — ניב של בסיליסק, מרכיב נדיר. סנייפ לקח אותו מידייך בלי מילה, אבל הנהן קלות. אישור.',
+    choices: [
+      { text: "להכין שיקוי עם סנייפ", target: "potion_fire" },
+      { text: "שמעת רעש מהגינה", target: "garden_intro" }
+    ]
+  },
+  potion_fire: {
+    type: "spell", emoji: '🔥', speaker: 'סנייפ',
+    text: 'סנייפ הניח קדירה על השולחן. <span class="dialogue">"שיקוי פוליג\'וס — להפוך למישהו אחר."</span> הוא הסתכל בך. <span class="dialogue">"אני צריך אש. הדליקי."</span>',
+    hint: "'אינסנדיו' — לחש אש",
+    hint2: "כתבי: אינסנדיו 🔥",
+    answer: "אינסנדיו", item: "שיקוי פוליג'וס",
+    successText: 'להבות כתומות פרצו! השיקוי בעבע בירוק בוצי. סנייפ מילא בקבוקון והושיט אותו. <span class="dialogue">"קחי. אולי תצטרכי יום אחד."</span>',
+    choices: [
+      { text: "להתחפש ולחקור", target: "disguise_scene" },
+      { text: "לשמור ולצאת", target: "snape_reward" }
+    ]
+  },
+  disguise_scene: {
+    type: "narrative", emoji: '🎭',
+    text: 'שתית את השיקוי. הפנים שלך השתנו, השיער התקצר. חמקת לחדר הנבואות. האוויר קר ודק. מאות כדורים זוהרים על מדפים גבוהים. אחד התגלגל מהמדף — לא התנפץ. הוא רחף לאט לעברך.',
+    choices: [{ text: "למשוך את כדור הנבואה", target: "prophecy_pull" }]
+  },
+  prophecy_pull: {
+    type: "spell", emoji: '🔮',
+    text: 'הכדור מרחף, ממש מחוץ להישג יד. צריך למשוך אותו — הלחש שקורא לחפצים!',
+    hint: "'אקיו' + שם החפץ",
+    hint2: "כתבי: אקיו נבואה 🔮",
+    answer: "אקיו נבואה", item: "כדור נבואה",
+    successText: 'הכדור שט לידייך! ערפל סגול הסתחרר בפנים, ולרגע שמעת לחישה עמוקה — מילים שלא הבנת. עדיין.'
+  },
+  snape_reward: {
+    type: "spell", emoji: '⚗️', speaker: 'סנייפ',
+    text: 'סנייפ הוציא בקבוקון זהוב. <span class="dialogue">"פליקס פליציס. שיקוי מזל."</span> חצי חיוך. <span class="dialogue">"אבל יש מנעול. את יודעת מה לעשות."</span>',
+    hint: "הלחש שפותח הכל...",
+    hint2: "כתבי: אלוהומורה 🔓",
+    answer: "אלוהומורה", item: "פליקס פליציס",
+    successText: 'המנעול נפתח. הבקבוקון נוצץ באור חם. <span class="dialogue">"אל תבזבזי את זה,"</span> אמר סנייפ.'
+  },
+  garden_intro: {
+    type: "narrative", emoji: '🌿',
+    text: 'בגינה — צעקות. דראקו נלחם בשיח כשפים ענק שכרך ענפים סביב רגליו. <span class="dialogue">"תעזרי לי!"</span> הוא צעק. פניו חיוורים. <span class="dialogue">"הצמח הזה משוגע!"</span> הענפים התהדקו. דראקו נאנח.',
+    choices: [{ text: "להציל את דראקו!", target: "garden_spell" }]
+  },
+  garden_spell: {
+    type: "spell", emoji: '🌿', speaker: 'דראקו',
+    text: 'הענפים מתהדקים! <span class="dialogue">"תעשי משהו!"</span> נאנק דראקו. צריך להשתיק את הצמח — לחש שמשתק!',
+    hint: "מתחיל ב-'סטופ' ונגמר ב-'פיי'",
+    hint2: "כתבי: סטופיפיי 😴",
+    answer: "סטופיפיי", item: "עלה מנדרגורה",
+    successText: 'הצמח קפא! הענפים נפלו, ודראקו עמד על רגליו. <span class="dialogue">"אה... תודה,"</span> הוא מלמל בלי להסתכל בעיניים. זו הפעם הראשונה ששמעת את דראקו אומר תודה.',
+    choices: [
+      { text: "ללכת עם דראקו ליער האסור", target: "forest_intro" },
+      { text: "לחזור לסנייפ עם העלה", target: "snape_reward" }
+    ]
+  },
+  forest_intro: {
+    type: "narrative", emoji: '🌑', speaker: 'דראקו',
+    text: '<span class="dialogue">"אני חייב לך,"</span> דראקו אמר בשקט. <span class="dialogue">"אז אני אראה לך משהו. אבל תבטיחי לא לספר."</span> הוא הוביל אותך לשביל צר ביער האסור. העצים נהיו צפופים, והאור נעלם. עכביש ענק — בגודל מכונית — חסם את הדרך. דראקו קפא. <span class="dialogue">"אני... לא כל כך טוב עם עכבישים."</span>',
+    choices: [{ text: "להתמודד עם העכביש!", target: "spider_fight" }]
+  },
+  spider_fight: {
+    type: "spell", emoji: '🕷️',
+    text: 'העכביש התקדם. שמונה עיניים בהקו עלייך. דראקו נרתע. את חייבת לדחוף אותו — יש לחש מיוחד לעכבישים!',
+    hint: "'אראניה' + 'אקזמיי'",
+    hint2: "כתבי: אראניה אקזמיי 🕷️",
+    answer: "אראניה אקזמיי", item: "משי עכביש קסום",
+    successText: 'העכביש נדחף ונעלם בין העצים! דראקו נשם. <span class="dialogue">"אוקיי, את ממש טובה."</span> על הרצפה — חוט משי עכביש קסום, מרכיב נדיר.'
+  },
+
+  // ======= משותפים =======
+  basement_entrance: {
+    type: "narrative", emoji: '🕯️',
+    text: 'המפה הובילה דרך מסדרונות צרים ומדרגות שיורדות למטה, למטה. האוויר קר ולח. בסוף — קיר אבנים ענק. אין דלת, אין ידית. רק אבנים.',
+    choices: [{ text: "לפוצץ את הקיר!", target: "basement_wall" }]
+  },
+  basement_wall: {
+    type: "spell", emoji: '💥',
+    text: 'קיר אבנים חוסם את הדרך. אין סביבו מעבר. צריך לחש שיפוצץ אותו!',
+    hint: "מתחיל ב-'בומב'...",
+    hint2: "כתבי: בומבארדה 💣",
+    answer: "בומבארדה", item: "שרשרת עתיקה",
+    successText: 'בום! האבנים התעופפו! כשהאבק התפזר — חדר סודי. במרכזו, על כן אבן, שרשרת עתיקה עם תליון אריה זהוב.'
+  },
+  library_map: {
+    type: "spell", emoji: '📜', speaker: 'הספרנית',
+    text: 'גברת פינס בדקה את המפה. <span class="dialogue">"הפענוח בספר כבול בשלשלאות — באגף האסור."</span> היא הצביעה על ספר כרוך בברזל. <span class="dialogue">"פשוט תפתחי."</span>',
+    hint: "הלחש שפותח מנעולים",
+    hint2: "כתבי: אלוהומורה 🔓",
+    answer: "אלוהומורה", item: "ספר כשפים עתיק",
+    successText: 'השלשלאות נפלו! הספר נפתח ואור עדין יצא מהדפים — מפה מפורטת של כל המעברים הסודיים בהוגוורטס.'
+  }
+};
+
+function chooseHouse(h) {
+  house = h;
+  currentHouse = h === 'griffindor' ? 'גריפינדור 🦁' : "סלית'רין 🐍";
+  document.getElementById('house-label').textContent = currentHouse;
+  document.getElementById('score-bar').style.display = 'flex';
+  document.getElementById('main-choices').style.display = 'none';
+  goToStep(h === 'griffindor' ? 'griffindor_intro' : 'slytherin_intro');
+}
+
+function goToStep(stepKey) {
+  currentPath = stepKey;
+  const data = S[stepKey];
+  if (!data) { showShop(); return; }
+
+  const container = document.getElementById('game-container');
+  container.classList.remove('scene-fade');
+  void container.offsetWidth;
+  container.classList.add('scene-fade');
+
+  const speakerEl = document.getElementById('speaker');
+  if (data.speaker) { speakerEl.textContent = data.speaker + ':'; speakerEl.style.display = 'block'; }
+  else { speakerEl.style.display = 'none'; }
+
+  document.getElementById('emoji-header').textContent = data.emoji;
+  document.getElementById('story-display').innerHTML = data.text;
+  document.getElementById('spell-section').style.display = 'none';
+  document.getElementById('branch-choices').style.display = 'none';
+  document.getElementById('shop-section').style.display = 'none';
+
+  if (data.type === 'narrative') {
+    showChoices(data.choices);
+  } else if (data.type === 'spell') {
+    document.getElementById('spell-section').style.display = 'block';
+    document.getElementById('hint-text').textContent = data.hint;
+    document.getElementById('spell-input').value = "";
+    document.getElementById('feedback').textContent = "";
+    document.getElementById('extra-hint-box').style.display = 'none';
+    document.getElementById('extra-hint-btn').style.display = 'block';
+    usedExtraHint = false;
+    failedAttempts = 0;
+    startTimer();
+  }
+}
+
+function showExtraHint() {
+  const data = S[currentPath];
+  document.getElementById('extra-hint-text').textContent = data.hint2;
+  document.getElementById('extra-hint-box').style.display = 'flex';
+  document.getElementById('extra-hint-btn').style.display = 'none';
+  usedExtraHint = true;
+}
+
+function startTimer() {
+  timerSeconds = 30;
+  clearInterval(timerInterval);
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    timerSeconds--;
+    updateTimerDisplay();
+    if (timerSeconds <= 0) clearInterval(timerInterval);
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const el = document.getElementById('timer-display');
+  el.textContent = '⏱ ' + timerSeconds;
+  el.classList.toggle('timer-urgent', timerSeconds <= 5 && timerSeconds > 0);
+}
+
+function castSpell() {
+  const input = document.getElementById('spell-input').value.trim();
+  const data = S[currentPath];
+
+  if (input === data.answer) {
+    clearInterval(timerInterval);
+    totalSpells++;
+    let earned = 10;
+    if (usedExtraHint) earned = 5;
+    if (timerSeconds <= 0) earned = Math.max(earned - 3, 2);
+    if (failedAttempts === 0 && !usedExtraHint) { earned = 15; perfectSpells++; }
+    points += earned;
+    document.getElementById('points-display').textContent = points + ' נקודות';
+    document.getElementById('timer-display').textContent = '';
+
+    if (data.item && !inventory.includes(data.item)) { inventory.push(data.item); updateInventory(); }
+
+    document.getElementById('spell-section').style.display = 'none';
+    document.getElementById('speaker').style.display = 'none';
+    document.getElementById('story-display').innerHTML = data.successText + `<div style="text-align:center; margin-top:12px; color: var(--gold); font-size:1.3rem;">+${earned} נקודות ✨</div>`;
+
+    checkAchievements();
+    setTimeout(() => { data.choices ? showChoices(data.choices) : showShop(); }, 2200);
+  } else {
+    failedAttempts++;
+    document.getElementById('feedback').textContent = "הלחש נכשל... נסי שוב!";
+    document.getElementById('feedback').style.color = "var(--red)";
+    document.getElementById('spell-input').style.animation = 'shakeX 0.4s ease';
+    setTimeout(() => document.getElementById('spell-input').style.animation = '', 400);
+  }
+}
+
+function showChoices(choices) {
+  const container = document.getElementById('branch-choices');
+  container.innerHTML = "";
+  container.style.display = 'flex';
+  choices.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = c.text;
+    btn.onclick = () => goToStep(c.target);
+    container.appendChild(btn);
+  });
+}
+
+function updateInventory() {
+  document.getElementById('inventory').innerHTML = inventory.length ? '🎒 ' + inventory.join(' • ') : '';
+}
+
+function showShop() {
+  document.getElementById('spell-section').style.display = 'none';
+  document.getElementById('branch-choices').style.display = 'none';
+  document.getElementById('speaker').style.display = 'none';
+  document.getElementById('timer-display').textContent = '';
+  document.getElementById('emoji-header').textContent = '🏪';
+  document.getElementById('story-display').innerHTML = `
+    <div style="text-align:center;">
+      <h2 style="color: var(--gold); font-family: 'Cinzel Decorative'; font-size: 1.3rem; margin: 0 0 0.5rem;">המסע הסתיים!</h2>
+      <p>צברת <strong style="color: var(--gold);">${points} נקודות</strong> לבית ${currentHouse}</p>
+      <p style="font-size: 0.9rem; color: #94a3b8;">קני חפצים מסמטת דיאגון:</p>
+    </div>`;
+  const shopEl = document.getElementById('shop-section');
+  shopEl.style.display = 'block';
+  shopEl.innerHTML = '';
+  shopItems.forEach(item => {
+    const owned = ownedItems.includes(item.id);
+    const div = document.createElement('div');
+    div.className = 'shop-item';
+    div.innerHTML = `
+      <div class="shop-item-info"><div class="shop-item-name">${item.emoji} ${item.name}</div><div class="shop-item-desc">${item.desc}</div></div>
+      ${owned ? '<span style="color:var(--green);">נרכש ✓</span>' : `<button class="shop-buy-btn" ${points >= item.price ? '' : 'disabled'} onclick="buyItem('${item.id}',${item.price})">${item.price} נק'</button>`}`;
+    shopEl.appendChild(div);
+  });
+  const r = document.createElement('button');
+  r.className = 'choice-btn'; r.style.marginTop = '1.5rem';
+  r.textContent = '🔄 הרפתקה חדשה';
+  r.onclick = () => location.reload();
+  shopEl.appendChild(r);
+}
+
+function buyItem(id, price) {
+  if (points >= price && !ownedItems.includes(id)) {
+    points -= price; ownedItems.push(id);
+    document.getElementById('points-display').textContent = points + ' נקודות';
+    showShop(); showToast('🛍️ פריט חדש!');
+  }
+}
+
+function checkAchievements() {
+  if (totalSpells === 1 && !achievements.includes('first')) { achievements.push('first'); showToast('🌟 הלחש הראשון!'); }
+  if (perfectSpells >= 3 && !achievements.includes('p3')) { achievements.push('p3'); showToast('⚡ 3 לחשים מושלמים!'); }
+  if (inventory.length >= 5 && !achievements.includes('col')) { achievements.push('col'); showToast('🎒 אספנית!'); }
+}
+
+function showToast(text) {
+  const t = document.createElement('div'); t.className = 'achievement-toast'; t.textContent = text;
+  document.body.appendChild(t); setTimeout(() => t.remove(), 3000);
+}
+
+document.getElementById('spell-input').addEventListener('keypress', e => { if (e.key === 'Enter') castSpell(); });
+</script>
+</body>
+</html>
