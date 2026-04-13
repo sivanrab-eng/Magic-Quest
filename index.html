@@ -3,574 +3,204 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Magic Quest ✨ שיעור קסמים</title>
+<title>Harry Potter: Your Story ⚡</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Noto+Serif+Hebrew:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
     --gold: #d4a843;
-    --gold-light: #f5d680;
-    --gold-glow: rgba(212, 168, 67, 0.4);
-    --slate-deep: #0b0e1a;
-    --slate-mid: #151a2e;
-    --blue-magic: #3b82f6;
-    --blue-light: #60a5fa;
-    --green-success: #22c55e;
-    --red-fail: #ef4444;
+    --slate: #0b0e1a;
+    --red-griffindor: #740001;
   }
 
   body {
     font-family: 'Noto Serif Hebrew', serif;
-    background: var(--slate-deep);
+    background: var(--slate);
     color: #e2e8f0;
-    min-height: 100dvh;
-    overflow-x: hidden;
-    position: relative;
-  }
-
-  /* ── Starfield Background ── */
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background:
-      radial-gradient(1.5px 1.5px at 10% 20%, rgba(255,255,255,0.7), transparent),
-      radial-gradient(1px 1px at 30% 60%, rgba(255,255,255,0.5), transparent),
-      radial-gradient(1.5px 1.5px at 55% 15%, rgba(212,168,67,0.6), transparent),
-      radial-gradient(1px 1px at 70% 45%, rgba(255,255,255,0.4), transparent),
-      radial-gradient(2px 2px at 85% 75%, rgba(212,168,67,0.5), transparent),
-      radial-gradient(1px 1px at 20% 80%, rgba(255,255,255,0.5), transparent),
-      radial-gradient(1.5px 1.5px at 45% 90%, rgba(255,255,255,0.3), transparent),
-      radial-gradient(1px 1px at 60% 35%, rgba(212,168,67,0.4), transparent),
-      radial-gradient(1px 1px at 90% 10%, rgba(255,255,255,0.6), transparent),
-      radial-gradient(1.5px 1.5px at 75% 55%, rgba(255,255,255,0.3), transparent),
-      radial-gradient(ellipse at 50% 0%, rgba(30,40,80,0.6) 0%, transparent 60%);
-    pointer-events: none;
-    z-index: 0;
-    animation: twinkle 6s ease-in-out infinite alternate;
-  }
-
-  @keyframes twinkle {
-    0% { opacity: 0.7; }
-    100% { opacity: 1; }
-  }
-
-  /* ── Floating particles ── */
-  .particle {
-    position: fixed;
-    width: 4px; height: 4px;
-    border-radius: 50%;
-    background: var(--gold-light);
-    opacity: 0;
-    pointer-events: none;
-    z-index: 1;
-    animation: floatUp 8s ease-in infinite;
-  }
-  .particle:nth-child(1) { left: 10%; animation-delay: 0s; animation-duration: 7s; }
-  .particle:nth-child(2) { left: 25%; animation-delay: 2s; animation-duration: 9s; }
-  .particle:nth-child(3) { left: 50%; animation-delay: 4s; animation-duration: 6s; }
-  .particle:nth-child(4) { left: 70%; animation-delay: 1s; animation-duration: 8s; }
-  .particle:nth-child(5) { left: 88%; animation-delay: 3s; animation-duration: 10s; }
-
-  @keyframes floatUp {
-    0%   { transform: translateY(100vh) scale(0); opacity: 0; }
-    20%  { opacity: 0.8; }
-    80%  { opacity: 0.4; }
-    100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
-  }
-
-  /* ── Header ── */
-  header {
-    position: relative; z-index: 10;
-    text-align: center;
-    padding: 2.5rem 1rem 1rem;
-  }
-  header h1 {
-    font-family: 'Cinzel Decorative', cursive;
-    font-size: clamp(1.8rem, 6vw, 2.8rem);
-    color: var(--gold);
-    text-shadow: 0 0 30px var(--gold-glow), 0 2px 4px rgba(0,0,0,0.6);
-    letter-spacing: 0.05em;
-    direction: ltr;
-  }
-  header p {
-    font-size: 0.8rem;
-    color: rgba(212,168,67,0.5);
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    margin-top: 0.3rem;
-    direction: ltr;
-  }
-
-  /* ── Main Container ── */
-  main {
-    position: relative; z-index: 10;
-    max-width: 540px;
-    margin: 0 auto;
-    padding: 0 1.25rem 3rem;
-  }
-
-  /* ── Level indicator ── */
-  .level-badge {
-    text-align: center;
-    margin-bottom: 0.5rem;
-  }
-  .level-badge span {
-    display: inline-block;
-    font-family: 'Cinzel Decorative', cursive;
-    font-size: 0.7rem;
-    color: var(--gold-light);
-    background: rgba(212,168,67,0.1);
-    border: 1px solid rgba(212,168,67,0.25);
-    padding: 0.25rem 1rem;
-    border-radius: 999px;
-    letter-spacing: 0.15em;
-    direction: ltr;
-  }
-
-  /* ── Mana Bar ── */
-  .mana-section {
-    text-align: center;
-    margin-bottom: 1.5rem;
-  }
-  .mana-label {
-    font-size: 0.65rem;
-    color: rgba(212,168,67,0.5);
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    margin-bottom: 0.4rem;
-    direction: ltr;
-  }
-  .mana-track {
-    margin: 0 auto;
-    width: 260px; height: 10px;
-    border-radius: 999px;
-    background: var(--slate-mid);
-    border: 1px solid rgba(100,116,139,0.3);
-    overflow: hidden;
-  }
-  #mana-bar {
-    height: 100%;
-    border-radius: 999px;
-    width: 0%;
-    background: linear-gradient(90deg, var(--blue-magic), var(--blue-light), #a78bfa);
-    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 0 12px rgba(96, 165, 250, 0.5);
-  }
-
-  /* ── Emoji Display ── */
-  .emoji-area {
-    text-align: center;
-    margin-bottom: 1rem;
-  }
-  #emoji-display {
-    font-size: 5rem;
-    display: inline-block;
-    animation: popIn 0.6s ease-out;
-    filter: drop-shadow(0 0 20px rgba(212,168,67,0.3));
-  }
-  @keyframes popIn {
-    0%   { transform: scale(0) rotate(-20deg); opacity: 0; }
-    60%  { transform: scale(1.15) rotate(5deg); }
-    100% { transform: scale(1) rotate(0); opacity: 1; }
-  }
-
-  /* ── Story Card ── */
-  .story-card {
-    background: rgba(15,23,42,0.7);
-    backdrop-filter: blur(12px);
-    border-radius: 1.25rem;
-    padding: 1.5rem;
-    border: 1px solid rgba(212,168,67,0.2);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03);
-    margin-bottom: 1.25rem;
-    position: relative;
-    overflow: hidden;
-  }
-  .story-card::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--gold-glow), transparent);
-  }
-  .story-row {
+    margin: 0;
     display: flex;
-    align-items: flex-start;
-    gap: 0.75rem;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
   }
-  #quest-text {
-    flex: 1;
-    font-size: 1.2rem;
-    line-height: 2;
+
+  header { padding: 2rem; text-align: center; }
+  h1 { font-family: 'Cinzel Decorative'; color: var(--gold); text-shadow: 0 0 15px rgba(212,168,67,0.5); }
+
+  .game-container {
+    max-width: 600px;
+    width: 90%;
+    background: rgba(21, 26, 46, 0.8);
+    backdrop-filter: blur(10px);
+    border: 2px solid var(--gold);
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+    position: relative;
+  }
+
+  .story-text { 
+    font-size: 1.4rem; 
+    line-height: 1.8; 
+    margin-bottom: 2rem; 
+    min-height: 150px;
     color: #cbd5e1;
   }
-  #quest-text .magic-word {
-    color: var(--gold-light);
-    font-weight: 700;
-    text-shadow: 0 0 8px var(--gold-glow);
-  }
-  .speak-btn {
-    flex-shrink: 0;
-    background: none; border: none;
-    font-size: 1.6rem;
-    cursor: pointer;
-    transition: transform 0.2s;
-    padding: 0.25rem;
-    filter: drop-shadow(0 0 4px rgba(96,165,250,0.4));
-  }
-  .speak-btn:hover { transform: scale(1.25); }
-  .speak-btn:active { transform: scale(0.95); }
-
-  /* ── Input Area ── */
-  .input-card {
-    background: rgba(15,23,42,0.6);
-    backdrop-filter: blur(8px);
-    border-radius: 1.25rem;
-    padding: 1.5rem;
-    border: 1px solid rgba(212,168,67,0.15);
-    text-align: center;
-  }
-  #spell-input {
-    display: block;
-    margin: 0 auto 0.75rem;
-    width: 280px; max-width: 100%;
-    padding: 0.8rem 1rem;
-    border-radius: 0.75rem;
-    background: rgba(30,41,59,0.8);
-    border: 2px solid rgba(212,168,67,0.35);
-    color: #fff;
-    font-family: 'Noto Serif Hebrew', serif;
-    font-size: 1.4rem;
-    text-align: center;
-    outline: none;
-    direction: rtl;
-    transition: border-color 0.3s, box-shadow 0.3s;
-  }
-  #spell-input:focus {
-    border-color: var(--gold);
-    box-shadow: 0 0 0 3px var(--gold-glow), 0 0 20px rgba(212,168,67,0.15);
-  }
-  #spell-input::placeholder {
-    color: rgba(148,163,184,0.5);
-    font-size: 0.9rem;
-    direction: ltr;
-  }
-  #feedback-msg {
-    font-size: 0.85rem;
-    color: rgba(148,163,184,0.6);
-    min-height: 1.4em;
-    direction: ltr;
-  }
-  .cast-btn {
-    display: inline-block;
-    margin-top: 0.5rem;
-    padding: 0.6rem 2rem;
-    border-radius: 999px;
+  
+  .choices-grid { display: flex; flex-direction: column; gap: 1.2rem; }
+  
+  .choice-btn {
+    background: linear-gradient(135deg, rgba(212,168,67,0.1), rgba(212,168,67,0.05));
     border: 1px solid rgba(212,168,67,0.4);
-    background: linear-gradient(135deg, rgba(212,168,67,0.15), rgba(212,168,67,0.05));
-    color: var(--gold-light);
-    font-family: 'Cinzel Decorative', cursive;
-    font-size: 0.85rem;
-    letter-spacing: 0.1em;
-    cursor: pointer;
-    transition: all 0.3s;
-  }
-  .cast-btn:hover {
-    background: linear-gradient(135deg, rgba(212,168,67,0.3), rgba(212,168,67,0.1));
-    box-shadow: 0 0 20px var(--gold-glow);
-    transform: translateY(-1px);
-  }
-
-  /* ── Animations ── */
-  .correct-flash { animation: correctPulse 0.8s ease-out; }
-  @keyframes correctPulse {
-    0%   { box-shadow: 0 0 0 0 rgba(34,197,94,0.6); }
-    50%  { box-shadow: 0 0 0 15px rgba(34,197,94,0.15); }
-    100% { box-shadow: 0 0 0 30px rgba(34,197,94,0); }
-  }
-
-  .animate-shake {
-    animation: shake 0.4s ease-in-out;
-  }
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20%      { transform: translateX(-8px); }
-    40%      { transform: translateX(8px); }
-    60%      { transform: translateX(-6px); }
-    80%      { transform: translateX(6px); }
-  }
-
-  .success-text {
-    color: var(--gold-light) !important;
-    font-weight: 700;
-    animation: successBounce 0.6s ease-out;
-  }
-  @keyframes successBounce {
-    0%   { transform: scale(0.8); opacity: 0; }
-    50%  { transform: scale(1.1); }
-    100% { transform: scale(1); opacity: 1; }
-  }
-
-  /* ── Victory Screen ── */
-  .victory-container {
-    text-align: center;
-    animation: victoryFade 1s ease-out;
-  }
-  .victory-container h2 {
-    font-family: 'Cinzel Decorative', cursive;
-    font-size: 1.8rem;
     color: var(--gold);
-    text-shadow: 0 0 40px var(--gold-glow);
-    margin-bottom: 0.5rem;
-    direction: ltr;
-  }
-  .victory-container p {
-    color: #94a3b8;
-    font-size: 1rem;
-    direction: ltr;
-  }
-  .victory-emoji {
-    font-size: 4rem;
-    margin: 1rem 0;
-    animation: popIn 0.6s ease-out;
-  }
-  .restart-btn {
-    margin-top: 1.5rem;
-    padding: 0.7rem 2.5rem;
-    border-radius: 999px;
-    border: 1px solid rgba(212,168,67,0.5);
-    background: linear-gradient(135deg, rgba(212,168,67,0.2), rgba(212,168,67,0.05));
-    color: var(--gold-light);
-    font-family: 'Cinzel Decorative', cursive;
-    font-size: 0.9rem;
+    padding: 1.2rem;
+    border-radius: 12px;
     cursor: pointer;
-    transition: all 0.3s;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    text-align: right;
+    font-weight: bold;
+    font-family: 'Noto Serif Hebrew', serif;
   }
-  .restart-btn:hover {
-    background: linear-gradient(135deg, rgba(212,168,67,0.35), rgba(212,168,67,0.1));
-    box-shadow: 0 0 24px var(--gold-glow);
+
+  .choice-btn:hover { 
+    background: var(--gold); 
+    color: black; 
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(212,168,67,0.3);
   }
-  @keyframes victoryFade {
-    0% { opacity: 0; transform: translateY(20px); }
-    100% { opacity: 1; transform: translateY(0); }
+
+  .spell-section { display: none; text-align: center; animation: fadeIn 0.5s; }
+  #spell-input {
+    padding: 15px; border-radius: 10px; border: 2px solid var(--gold);
+    background: #1e293b; color: white; width: 80%; text-align: center; font-size: 1.3rem;
+    margin-bottom: 1rem; outline: none;
+    font-family: 'Noto Serif Hebrew', serif;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .inventory { 
+    margin-top: 2rem; 
+    font-size: 0.9rem; 
+    color: var(--gold); 
+    border-top: 1px solid rgba(212,168,67,0.2);
+    padding-top: 1rem;
   }
 </style>
 </head>
 <body>
 
-<!-- Floating golden particles -->
-<div class="particle"></div>
-<div class="particle"></div>
-<div class="particle"></div>
-<div class="particle"></div>
-<div class="particle"></div>
-
 <header>
-  <h1>Magic Quest</h1>
-  <p>Hogwarts Spell Academy</p>
+  <h1>הארי פוטר: המסע שלך</h1>
 </header>
 
-<main id="game-main">
-  <div class="level-badge">
-    <span id="level-text">Spell 1 of 4</span>
+<div class="game-container">
+  <div id="emoji-header" style="font-size: 3.5rem; text-align: center; margin-bottom: 1.5rem;">⚡</div>
+  
+  <div class="story-text" id="story-display">
+    שלום לך, קוסמת צעירה. את עומדת מול המצנפת הממיינת. היא לוחשת לך: "אני רואה בך אומץ רב... לאן תרצי להשתבץ?"
+  </div>
+  
+  <div class="choices-grid" id="choices-container">
+    <button class="choice-btn" onclick="startStory('griffindor')">🦁 גריפינדור - אני אמיצה ומוכנה להרפתקה!</button>
+    <button class="choice-btn" onclick="startStory('slytherin')">🐍 סלית'רין - אני שאפתנית ומחפשת כוח!</button>
   </div>
 
-  <div class="mana-section">
-    <div class="mana-label">Magic Energy</div>
-    <div class="mana-track">
-      <div id="mana-bar"></div>
-    </div>
+  <div class="spell-section" id="spell-section">
+    <p id="instruction-text" style="margin-bottom: 1rem; font-style: italic;"></p>
+    <input type="text" id="spell-input" placeholder="הקלידי את הלחש..." autocomplete="off">
+    <button class="choice-btn" style="width: auto; padding: 0.8rem 2rem;" onclick="castSpell()">הטיל לחש! ✨</button>
   </div>
 
-  <div class="emoji-area">
-    <span id="emoji-display">✨</span>
-  </div>
-
-  <div class="story-card">
-    <div class="story-row">
-      <div id="quest-text"></div>
-      <button class="speak-btn" onclick="speakQuest()" title="Listen to the story">🔊</button>
-    </div>
-  </div>
-
-  <div class="input-card">
-    <input id="spell-input" placeholder="Type the spell..." autocomplete="off">
-    <p id="feedback-msg">Press Enter to cast ⚡</p>
-    <button class="cast-btn" onclick="checkAnswer()">Cast Spell</button>
-  </div>
-</main>
+  <div class="inventory" id="inventory">תיק קסמים: ריק</div>
+</div>
 
 <script>
-const magicSteps = [
-  {
-    story: "הגעת למסדרון חשוך. הרמיוני אומרת: 'אל תפחדי, רק הלחש **לומוס** יאיר לנו את הדרך'.",
-    answer: "לומוס",
-    emoji: "🪄",
-    hint: "Spell: Lumos"
-  },
-  {
-    story: "הדלת לספרייה נעולה. על השלט כתוב: 'כדי להיכנס יש להשתמש בלחש **אלוהומורה** בזהירות'.",
+let state = {
+  house: '',
+  location: 'start',
+  inventory: [],
+  currentSpell: ''
+};
+
+const storyData = {
+  griffindor: {
+    emoji: '🦁',
+    text: "המצנפת צועקת: 'גריפינדור!' את הולכת במסדרון ופתאום רואה את האגריד. הוא צריך עזרה לפתוח תיבה נעולה. איזה לחש פותח דלתות ומנעולים?",
+    instruction: "לחשי את הלחש לפתיחת מנעולים:",
     answer: "אלוהומורה",
-    emoji: "🔐",
-    hint: "Spell: Alohomora"
+    success: "התיבה נפתחה! האגריד נותן לך 'נוצת עוף חול'.",
+    item: "נוצת עוף חול",
+    next: "פתאום מופיע סוהרסן מקפיא! מהר, מהו הלחש שמזמן פטרונוס?"
   },
-  {
-    story: "בשיעור של פרופסור פליטוויק, עליך להרים את הנוצה. הוא לוחש: 'הלחש הוא **וינגארדיום**, זכרי להניף!'.",
-    answer: "וינגארדיום",
-    emoji: "🪶",
-    hint: "Spell: Wingardium"
-  },
-  {
-    story: "סוהרסן מתקרב! מהר, השתמשי בלחש המגן **פרוטגו** כדי ליצור מעטפת קסומה.",
-    answer: "פרוטגו",
-    emoji: "🛡️",
-    hint: "Spell: Protego"
+  slytherin: {
+    emoji: '🐍',
+    text: "המצנפת צועקת: 'סלית'רין!' את יורדת לצינוק ופוגשת את סנייפ. הוא רוצה שתמצאי מרכיב לשיקוי בחדר חשוך. איזה לחש יאיר לך את הדרך?",
+    instruction: "לחשי את הלחש ליצירת אור:",
+    answer: "לומוס",
+    success: "החדר מואר! מצאת 'ניב של בסיליסק'.",
+    item: "ניב של בסיליסק",
+    next: "הדלת ננעלה מאחורייך! איך תפתחי אותה?"
   }
-];
+};
 
-const successMessages = [
-  "✨ Brilliant!",
-  "⚡ 10 points to Gryffindor!",
-  "🌟 Perfectly cast!",
-  "💫 Excellent magic!"
-];
-
-let currentLevel = 0;
-let isTransitioning = false;
-
-function loadStep() {
-  const step = magicSteps[currentLevel];
-
-  // Update level badge
-  document.getElementById('level-text').textContent = `Spell ${currentLevel + 1} of ${magicSteps.length}`;
-
-  // Animate emoji
-  const emojiEl = document.getElementById('emoji-display');
-  emojiEl.style.animation = 'none';
-  emojiEl.offsetHeight; // reflow
-  emojiEl.style.animation = 'popIn 0.6s ease-out';
-  emojiEl.textContent = step.emoji;
-
-  // Render story with highlighted magic word
-  document.getElementById('quest-text').innerHTML =
-    step.story.replace(/\*\*(.*?)\*\*/g, '<span class="magic-word">$1</span>');
-
-  // Reset input
-  const input = document.getElementById('spell-input');
-  input.value = '';
-  input.placeholder = step.hint;
-  input.disabled = false;
-  input.focus();
-
-  document.getElementById('feedback-msg').textContent = 'Press Enter to cast ⚡';
-  isTransitioning = false;
+function startStory(house) {
+  state.house = house;
+  state.location = 'step1';
+  updateUI();
 }
 
-function checkAnswer() {
-  if (isTransitioning) return;
+function updateUI() {
+  const data = storyData[state.house];
+  document.getElementById('emoji-header').textContent = data.emoji;
+  document.getElementById('story-display').textContent = data.text;
+  document.getElementById('choices-container').style.display = 'none';
+  document.getElementById('spell-section').style.display = 'block';
+  document.getElementById('instruction-text').textContent = data.instruction;
+  state.currentSpell = data.answer;
+}
 
-  const input = document.getElementById('spell-input');
-  const val = input.value.trim();
+function castSpell() {
+  const input = document.getElementById('spell-input').value.trim();
+  const data = storyData[state.house];
 
-  if (!val) return;
-
-  if (val === magicSteps[currentLevel].answer) {
-    isTransitioning = true;
-    input.disabled = true;
-
-    // Success feedback
-    const msg = successMessages[Math.floor(Math.random() * successMessages.length)];
-    document.getElementById('feedback-msg').innerHTML = `<span class="success-text">${msg}</span>`;
-
-    // Flash effect on story card
-    document.querySelector('.story-card').classList.add('correct-flash');
-
-    setTimeout(() => {
-      document.querySelector('.story-card').classList.remove('correct-flash');
-      currentLevel++;
-      updateMana();
-
-      if (currentLevel < magicSteps.length) {
-        loadStep();
-      } else {
-        victory();
-      }
-    }, 1800);
+  if (input === state.currentSpell) {
+    if (state.location === 'step1') {
+      state.inventory.push(data.item);
+      document.getElementById('inventory').textContent = "תיק קסמים: " + state.inventory.join(", ");
+      
+      document.getElementById('story-display').textContent = data.success + " " + data.next;
+      
+      if (state.house === 'griffindor') state.currentSpell = "אקספקטו פטרונום";
+      else state.currentSpell = "אלוהומורה";
+      
+      state.location = 'step2';
+      document.getElementById('spell-input').value = "";
+    } else {
+      victory();
+    }
   } else {
-    // Wrong answer
-    input.classList.add('animate-shake');
-    input.style.borderColor = 'rgba(239,68,68,0.6)';
-    document.getElementById('feedback-msg').innerHTML = '<span style="color:#f87171">Try again — read the golden word!</span>';
-
-    setTimeout(() => {
-      input.classList.remove('animate-shake');
-      input.style.borderColor = '';
-      input.value = '';
-      input.focus();
-    }, 500);
+    document.getElementById('spell-input').style.borderColor = 'red';
+    setTimeout(() => document.getElementById('spell-input').style.borderColor = 'var(--gold)', 500);
   }
-}
-
-function updateMana() {
-  const pct = (currentLevel / magicSteps.length) * 100;
-  document.getElementById('mana-bar').style.width = pct + '%';
-}
-
-function speakQuest() {
-  window.speechSynthesis.cancel();
-  const text = magicSteps[currentLevel].story.replace(/\*\*/g, '');
-  const msg = new SpeechSynthesisUtterance(text);
-  msg.lang = 'he-IL';
-  msg.rate = 0.75;
-  window.speechSynthesis.speak(msg);
 }
 
 function victory() {
-  document.getElementById('mana-bar').style.width = '100%';
-
-  document.getElementById('game-main').innerHTML = `
-    <div class="victory-container">
-      <div class="victory-emoji">🏰</div>
-      <h2>Quest Complete!</h2>
-      <p>You've mastered all Hogwarts spells.<br>Your Hebrew reading is pure magic!</p>
-      <div style="margin-top:1rem; font-size:2rem;">⚡🪄✨🦉</div>
-      <button class="restart-btn" onclick="restart()">Play Again</button>
+  document.getElementById('spell-section').style.display = 'none';
+  document.getElementById('emoji-header').textContent = '🏆';
+  document.getElementById('story-display').innerHTML = `
+    <div style="text-align: center;">
+      <h2 style="color: #d4a843;">כל הכבוד, קוסמת!</h2>
+      <p>השלמת את הפרק הראשון בסיפור שלך בהוגוורטס.</p>
+      <p>אספת: <strong>${state.inventory.join(", ")}</strong></p>
+      <button class="choice-btn" onclick="location.reload()">התחילי סיפור חדש</button>
     </div>
   `;
 }
 
-function restart() {
-  currentLevel = 0;
-  updateMana();
-  document.getElementById('game-main').innerHTML = `
-    <div class="level-badge"><span id="level-text">Spell 1 of 4</span></div>
-    <div class="mana-section">
-      <div class="mana-label">Magic Energy</div>
-      <div class="mana-track"><div id="mana-bar"></div></div>
-    </div>
-    <div class="emoji-area"><span id="emoji-display">✨</span></div>
-    <div class="story-card">
-      <div class="story-row">
-        <div id="quest-text"></div>
-        <button class="speak-btn" onclick="speakQuest()" title="Listen to the story">🔊</button>
-      </div>
-    </div>
-    <div class="input-card">
-      <input id="spell-input" placeholder="Type the spell..." autocomplete="off">
-      <p id="feedback-msg">Press Enter to cast ⚡</p>
-      <button class="cast-btn" onclick="checkAnswer()">Cast Spell</button>
-    </div>
-  `;
-  document.getElementById('spell-input').addEventListener('keypress', handleKey);
-  loadStep();
-}
-
-function handleKey(e) {
-  if (e.key === 'Enter') checkAnswer();
-}
-
-document.getElementById('spell-input').addEventListener('keypress', handleKey);
-loadStep();
+document.getElementById('spell-input').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') castSpell();
+});
 </script>
 </body>
 </html>
