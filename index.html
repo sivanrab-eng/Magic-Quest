@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מסע הקסם</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Rubik:ital,wght@0,400;0,600;1,400&family=Secular+One&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --gold:#d4a84b;--gold-dim:#9a7232;--crimson:#8b2035;--deep:#0a0812;
+    --ink:#1a1528;--parchment:#e8dcc8;--mist:rgba(180,160,220,0.12);
+    --glow:rgba(212,168,75,0.4);
+  }
+  html,body{height:100%;overflow:hidden}
+  body{
+    font-family:'Rubik','Heebo',sans-serif;
+    background:var(--deep);color:var(--parchment);
+    display:flex;align-items:center;justify-content:center;
+    direction:rtl;
+  }
+
+  .bg-layer{position:fixed;inset:0;z-index:0;overflow:hidden}
+  .bg-layer::before{
+    content:'';position:absolute;inset:-50%;
+    background:
+      radial-gradient(ellipse at 20% 50%,rgba(90,40,120,0.15),transparent 60%),
+      radial-gradient(ellipse at 80% 30%,rgba(30,60,120,0.12),transparent 50%),
+      radial-gradient(ellipse at 50% 80%,rgba(139,32,53,0.08),transparent 50%);
+    animation:drift 20s ease-in-out infinite alternate;
+  }
+  @keyframes drift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(-3%,2%) scale(1.05)}}
+
+  .stars{position:fixed;inset:0;z-index:0}
+  .star{
+    position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;
+    animation:twinkle var(--dur) ease-in-out infinite alternate;opacity:0;
+  }
+  @keyframes twinkle{0%{opacity:0.1;transform:scale(0.8)}100%{opacity:var(--bright);transform:scale(1.2)}}
+
+  .particle{
+    position:fixed;width:3px;height:3px;border-radius:50%;
+    background:var(--gold);opacity:0;z-index:1;
+    animation:float-up 6s ease-in infinite;filter:blur(1px);
+  }
+  @keyframes float-up{0%{opacity:0;transform:translateY(0) scale(0.5)}20%{opacity:0.7}100%{opacity:0;transform:translateY(-100vh) scale(0)}}
+
+  #game{
+    position:relative;z-index:2;width:100%;max-width:640px;
+    height:100dvh;display:flex;flex-direction:column;
+    padding:1.5rem 1.25rem;overflow:hidden;
+  }
+
+  #title-screen{
+    display:flex;flex-direction:column;align-items:center;
+    justify-content:center;height:100%;gap:1.5rem;
+    animation:fadeIn 1.5s ease;
+  }
+  .title-glyph{
+    font-size:3.5rem;line-height:1;
+    filter:drop-shadow(0 0 30px var(--glow));
+    animation:pulse-glow 3s ease-in-out infinite;
+  }
+  @keyframes pulse-glow{0%,100%{filter:drop-shadow(0 0 20px var(--glow))}50%{filter:drop-shadow(0 0 40px var(--gold))}}
+  .game-title{
+    font-family:'Secular One','Heebo',sans-serif;font-weight:900;
+    font-size:2.4rem;text-align:center;
+    background:linear-gradient(180deg,var(--gold),var(--gold-dim));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    line-height:1.3;
+  }
+  .subtitle{
+    font-family:'Heebo',sans-serif;font-size:1rem;font-weight:300;
+    color:rgba(232,220,200,0.5);letter-spacing:0.1em;
+  }
+  .start-btn{
+    margin-top:1rem;padding:0.85rem 2.8rem;
+    font-family:'Secular One','Heebo',sans-serif;font-size:1.05rem;
+    color:var(--deep);background:linear-gradient(135deg,var(--gold),var(--gold-dim));
+    border:none;border-radius:4px;cursor:pointer;
+    box-shadow:0 0 30px rgba(212,168,75,0.3),inset 0 1px 0 rgba(255,255,255,0.3);
+    transition:all 0.3s;position:relative;overflow:hidden;
+  }
+  .start-btn::after{
+    content:'';position:absolute;inset:0;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);
+    transform:translateX(-100%);transition:0.6s;
+  }
+  .start-btn:hover::after{transform:translateX(100%)}
+  .start-btn:hover{transform:translateY(-2px);box-shadow:0 0 50px rgba(212,168,75,0.5)}
+  .start-btn:active{transform:translateY(0)}
+
+  #story-screen{display:none;flex-direction:column;height:100%;gap:0}
+
+  .top-bar{
+    display:flex;justify-content:space-between;align-items:center;
+    padding-bottom:0.75rem;border-bottom:1px solid rgba(212,168,75,0.15);
+    flex-shrink:0;direction:ltr;
+  }
+  .stat{display:flex;align-items:center;gap:0.3rem;font-size:0.8rem}
+  .stat-icon{font-size:1rem}
+  .stat-val{font-family:'Heebo',sans-serif;color:var(--gold);font-size:0.95rem;font-weight:700}
+
+  .chapter-tag{
+    font-family:'Secular One','Heebo',sans-serif;font-size:0.8rem;
+    color:var(--gold-dim);padding-top:1rem;flex-shrink:0;text-align:right;
+  }
+
+  .story-content{
+    flex:1;overflow-y:auto;padding:0.75rem 0 1rem;
+    scrollbar-width:thin;scrollbar-color:var(--gold-dim) transparent;
+    mask-image:linear-gradient(to bottom,transparent 0%,black 3%,black 92%,transparent 100%);
+  }
+  .story-content::-webkit-scrollbar{width:4px}
+  .story-content::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:2px}
+
+  .story-text{
+    font-size:1.1rem;line-height:1.85;color:rgba(232,220,200,0.88);
+    animation:textReveal 0.8s ease;text-align:right;
+  }
+  .story-text em{color:var(--gold);font-style:normal;font-weight:600}
+  .story-text strong{color:#c9a0dc;font-weight:600}
+  @keyframes textReveal{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+  .choices{
+    display:flex;flex-direction:column;gap:0.6rem;
+    padding-top:0.75rem;border-top:1px solid rgba(212,168,75,0.1);
+    flex-shrink:0;
+  }
+  .choice-btn{
+    width:100%;padding:0.8rem 1rem;text-align:right;
+    font-family:'Rubik','Heebo',sans-serif;font-size:1rem;
+    color:var(--parchment);background:rgba(212,168,75,0.06);
+    border:1px solid rgba(212,168,75,0.18);border-radius:6px;
+    cursor:pointer;transition:all 0.3s;position:relative;overflow:hidden;
+    line-height:1.5;
+  }
+  .choice-btn::before{
+    content:'';position:absolute;right:0;top:0;bottom:0;width:3px;
+    background:var(--gold);opacity:0;transition:opacity 0.3s;
+  }
+  .choice-btn:hover{
+    background:rgba(212,168,75,0.12);border-color:rgba(212,168,75,0.35);
+    transform:translateX(-4px);
+  }
+  .choice-btn:hover::before{opacity:1}
+  .choice-btn:active{transform:translateX(-2px)}
+  .choice-num{
+    font-weight:700;color:var(--gold-dim);margin-left:0.5rem;font-size:0.85rem;
+    font-family:'Heebo',sans-serif;
+  }
+
+  #ending-screen{
+    display:none;flex-direction:column;align-items:center;
+    justify-content:center;height:100%;gap:1.2rem;text-align:center;
+  }
+  .ending-icon{font-size:3rem;animation:pulse-glow 3s ease-in-out infinite}
+  .ending-title{
+    font-family:'Secular One','Heebo',sans-serif;font-size:1.6rem;
+    color:var(--gold);
+  }
+  .ending-text{font-size:1.05rem;line-height:1.8;color:rgba(232,220,200,0.75);max-width:480px}
+  .ending-tag{
+    font-family:'Heebo',sans-serif;font-size:0.8rem;font-weight:300;
+    color:var(--gold-dim);margin-top:0.5rem;
+  }
+  .restart-btn{
+    margin-top:1rem;padding:0.7rem 2.2rem;
+    font-family:'Secular One','Heebo',sans-serif;font-size:0.9rem;
+    color:var(--parchment);background:transparent;
+    border:1px solid var(--gold-dim);border-radius:4px;cursor:pointer;
+    transition:all 0.3s;
+  }
+  .restart-btn:hover{background:rgba(212,168,75,0.12);border-color:var(--gold)}
+
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .fade-in{animation:fadeIn 0.6s ease}
+
+  @media(max-width:400px){
+    .game-title{font-size:1.9rem}
+    .story-text{font-size:1rem}
+    #game{padding:1rem}
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-layer"></div>
+<div class="stars" id="stars"></div>
+<div id="particles"></div>
+
+<div id="game">
+  <div id="title-screen">
+    <div class="title-glyph">🔮</div>
+    <h1 class="game-title">מסע הקסם</h1>
+    <p class="subtitle">עצב את גורלך</p>
+    <button class="start-btn" onclick="startGame()">התחל מסע</button>
+  </div>
+
+  <div id="story-screen">
+    <div class="top-bar">
+      <div class="stat"><span class="stat-icon">❤️</span><span class="stat-val" id="hp">100</span></div>
+      <div class="stat"><span class="stat-icon">⚡</span><span class="stat-val" id="mana">50</span></div>
+      <div class="stat"><span class="stat-icon">🗡️</span><span class="stat-val" id="power">10</span></div>
+      <div class="stat"><span class="stat-icon">✨</span><span class="stat-val" id="karma">0</span></div>
+    </div>
+    <div class="chapter-tag" id="chapter-tag"></div>
+    <div class="story-content">
+      <div class="story-text" id="story-text"></div>
+    </div>
+    <div class="choices" id="choices"></div>
+  </div>
+
+  <div id="ending-screen">
+    <div class="ending-icon" id="ending-icon"></div>
+    <h2 class="ending-title" id="ending-title"></h2>
+    <p class="ending-text" id="ending-text"></p>
+    <p class="ending-tag" id="ending-tag"></p>
+    <button class="restart-btn" onclick="startGame()">שחק שוב</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const s=document.getElementById('stars');
+  for(let i=0;i<60;i++){
+    const d=document.createElement('div');d.className='star';
+    d.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;--dur:${2+Math.random()*4}s;--bright:${0.3+Math.random()*0.7};animation-delay:${Math.random()*4}s`;
+    s.appendChild(d);
+  }
+  const p=document.getElementById('particles');
+  for(let i=0;i<12;i++){
+    const d=document.createElement('div');d.className='particle';
+    d.style.cssText=`left:${Math.random()*100}%;bottom:${Math.random()*20}%;animation-delay:${Math.random()*6}s;animation-duration:${5+Math.random()*4}s`;
+    p.appendChild(d);
+  }
+})();
+
+let state={hp:100,mana:50,power:10,karma:0,flags:{}};
+
+function updateStats(){
+  document.getElementById('hp').textContent=state.hp;
+  document.getElementById('mana').textContent=state.mana;
+  document.getElementById('power').textContent=state.power;
+  document.getElementById('karma').textContent=state.karma;
+}
+
+const scenes={
+  start:{
+    chapter:"פרק א׳ — ההתעוררות",
+    text:`את/ה מתעורר/ת על רצפת אבן קרה. גופך כואב, והזיכרון — ריק לחלוטין. מעליך, תקרה סדוקה חושפת שמיים של <em>כוכבים סגולים</em> שמעולם לא ראית.\n\nפעימה חמה פועמת בכף ידך הימנית — <strong>רונה זוהרת</strong> חרוטה בעורך, המהמה בכוח עתיק.\n\nלחישה מהדהדת בין החורבות:\n\n<em>״החותם נשבר. הנודד מתעורר.״</em>\n\nשני מעברים נפתחים לפניך — אחד מואר באור לפידים רועד, והשני נבלע בחושך.`,
+    choices:[
+      {text:"ללכת בעקבות אור הלפידים — לחפש מקלט",next:"torch_path",effect:()=>{state.karma+=1}},
+      {text:"להיכנס לחושך — לחבק את הלא נודע",next:"dark_path",effect:()=>{state.mana+=15;state.power+=3}},
+      {text:"לחקור קודם את הרונה שעל כף היד",next:"study_rune",effect:()=>{state.mana+=10;state.flags.studied_rune=true}}
+    ]
+  },
+  torch_path:{
+    chapter:"פרק ב׳ — השומרת",
+    text:`אור הלפידים מוביל אותך דרך מסדרונות מתפתלים אל גן תת-קרקעי עצום. פרחים זוהרים משרים <em>אור כחול-ירקרק</em> על עמודים עתיקים.\n\nדמות עטופת גלימה מטפלת בגן — אישה זקנה עם עיניים כסופות.\n\n<em>״אה. את/ה נושא/ת את סימן הנודד,״</em> היא אומרת בשקט. <em>״אני מירה, שומרת גן השורשים. העולם שמעל נפל ל<strong>מגפת הריק</strong>.״</em>\n\nהיא מושיטה לך בקבוקון נוצץ. <em>״צוף פריחת-כוכבים. הוא יחזק את גופך — אבל זהו האחרון שנותר לי.״</em>`,
+    choices:[
+      {text:"לקבל את הבקבוקון בהכרת תודה",next:"accept_vial",effect:()=>{state.hp+=30;state.karma-=1}},
+      {text:"לסרב — היא צריכה אותו יותר ממני",next:"decline_vial",effect:()=>{state.karma+=5;state.flags.kind_to_myra=true}},
+      {text:"לשאול את מירה על מגפת הריק",next:"ask_plague",effect:()=>{state.mana+=5}}
+    ]
+  },
+  dark_path:{
+    chapter:"פרק ב׳ — התהום מדברת",
+    text:`החושך חי. הוא נושם. הוא <em>יודע את שמך</em> — למרות שאת/ה עצמך שכחת אותו.\n\nצללים מתגבשים לדמות — גבוהה, מלכותית, עם עיניים כמו <strong>אמטיסטים בוערים</strong>.\n\n<em>״אני נוקטיס, אדון המסך העמוק. את/ה נושא/ת את רונת הנודד... כמה מענג.״</em>\n\nהוא מושיט יד מצויידת בטפרים. <em>״אני יכול להשיב את זכרונותיך — כל פיסה. אבל תצטרך/י להישבע לי נאמנות.״</em>`,
+    choices:[
+      {text:"להישבע נאמנות — אני חייב/ת את הזכרונות",next:"swear_fealty",effect:()=>{state.power+=15;state.karma-=8;state.flags.dark_pact=true}},
+      {text:"לסרב ולהילחם בו",next:"fight_noctis",effect:()=>{state.hp-=25;state.power+=5;state.karma+=3}},
+      {text:"לנסות לנהל משא ומתן",next:"negotiate",effect:()=>{state.mana+=10;state.karma+=1}}
+    ]
+  },
+  study_rune:{
+    chapter:"פרק ב׳ — שפת הכוכבים",
+    text:`את/ה לוחץ/ת את אצבעותיך על הרונה ועוצם/ת עיניים. העולם נמס לים של <em>סמלים זהובים</em> — שפה עתיקה שזורמת דרך התודעה.\n\nשברי ידע פורצים לתוכך: הרונה היא <strong>חותם נווט</strong>, שנוצר על ידי מסדר שכוח של קוסמים בשם <em>הלומינארי</em>.\n\nהחותם יכול לפתוח מסלולים נסתרים... והוא מושך אותך למקום מסוים. חזון מבזיק — <strong>מגדל אדיר</strong> שנועץ בעננים סוערים.\n\nכשאת/ה פוקח/ת עיניים, שני המעברים השתנו. שביל שלישי הופיע — מדרגות מסתלסלות כלפי מעלה.`,
+    choices:[
+      {text:"לקחת את השביל החדש כלפי מעלה",next:"tower_path",effect:()=>{state.mana+=20;state.flags.found_tower_path=true}},
+      {text:"ללכת בעקבות אור הלפידים",next:"torch_path",effect:()=>{state.karma+=1}},
+      {text:"להיכנס לחושך — לבחון את הידע החדש",next:"dark_path",effect:()=>{state.power+=5}}
+    ]
+  },
+  accept_vial:{
+    chapter:"פרק ג׳ — כוח מחודש",
+    text:`הצוף טועם כמו <em>אור ירח נוזלי</em>. חום שוטף את גופך — פצעים שלא ידעת שקיימים מתחילים להירפא. הרונה שלך מבזיקה בעוצמה.\n\nמירה מחייכת בעצב. <em>״השתמש/י בכוח הזה בחוכמה. <strong>המצודה השחורה</strong> נמצאת שלושה ימים צפונה. שם נולדה מגפת הריק — ושם היא חייבת להסתיים.״</em>\n\nהיא לוחצת <strong>מצפן גבישי</strong> לידך. המחט לא מצביעה צפונה, אלא למשהו עמוק יותר.\n\n<em>״לך/י בעקבות המשיכה. אל תסמוך/י על דבר שאינו מטיל צל.״</em>`,
+    choices:[
+      {text:"לצאת למצודה השחורה מיד",next:"citadel_approach",effect:()=>{state.power+=5}},
+      {text:"לשאול אם תצטרף אליי",next:"recruit_myra",effect:()=>{state.karma+=2;state.flags.asked_myra=true}}
+    ]
+  },
+  decline_vial:{
+    chapter:"פרק ג׳ — חסד שנזכר",
+    text:`עיניה הכסופות של מירה מתרחבות. <em>״בכל מאות השנים שלי... אף נודד מעולם לא סירב.״</em>\n\nהיא שותה את הבקבוקון בעצמה, וגופה הרזה מתיישר. אור חוזר לעיניה. היא צוחקת — צליל כמו פעמוני רוח.\n\n<em>״עברת מבחן שלא ידעת שקיים.״</em>\n\nהיא מניחה את שתי ידיה על הרונה שלך. כוח עתיק עובר — לא כוח פיזי, אלא משהו עמוק יותר. הרונה שלך עכשיו זוהרת ב<strong>אור כסוף-זהוב</strong>.\n\n<em>״נתתי לך את ברכת השומרת. הריק לא יוכל לגעת בך בקלות.״</em>`,
+    choices:[
+      {text:"לשאול על המצודה השחורה",next:"citadel_approach",effect:()=>{state.mana+=15;state.flags.keepers_blessing=true}},
+      {text:"לבקש ממנה להצטרף למסע",next:"recruit_myra_blessed",effect:()=>{state.karma+=3;state.flags.myra_joins=true}}
+    ]
+  },
+  ask_plague:{
+    chapter:"פרק ג׳ — אמיתות אפלות",
+    text:`פניה של מירה מתקדרות. <em>״מגפת הריק אינה מחלה — היא <strong>התפרקות</strong>. מישהו פרץ את החותם בין עולמנו לריק.״</em>\n\nהיא מעקבת דפוס באוויר — עשן צללים יוצר מפה. <em>״הפרצה נמצאת ב<strong>מצודה השחורה</strong>. פעם מבצר של הלומינארי, עכשיו מושחתת.״</em>\n\nקולה נמוך. <em>״מי ששבר את החותם... נשא רונה כמו שלך.״</em>\n\nצמרמורת עוברת בך. נודד אחר גרם לכל זה?`,
+    choices:[
+      {text:"להישבע להגיע למצודה ולתקן",next:"citadel_approach",effect:()=>{state.karma+=3;state.power+=5}},
+      {text:"לשאול אם הנודד האחר עדיין חי",next:"other_wanderer",effect:()=>{state.flags.knows_other_wanderer=true;state.mana+=10}}
+    ]
+  },
+  swear_fealty:{
+    chapter:"פרק ג׳ — כבול בצללים",
+    text:`את/ה כורע/ת ברך. המילים נשפכות מפיך בשפה שאינך מכיר/ה — <em>אבל הרונה שלך כן</em>.\n\nנוקטיס מחייך. חושך עוטף אותך כמו שריון. זכרונות שוטפים בחזרה — שמך, עברך, עיר בוערת, בגידה.\n\n<em>״היית קוסם/ת מהלומינארי,״</em> נוקטיס מפטפט. <em>״<strong>את/ה</strong> עזרת לשבור את החותם. ועכשיו... תעזור/י לי לסיים את מה שהתחיל.״</em>\n\nכוח פורץ דרכך — משכר, נורא. הרונה שלך הופכת ל<strong>סגול עמוק</strong>.`,
+    choices:[
+      {text:"לחבק את הכוח האפל לחלוטין",next:"ending_dark_lord",effect:()=>{state.power+=20;state.karma-=10}},
+      {text:"להשתמש בזכרונות כדי להשתחרר",next:"break_free",effect:()=>{state.hp-=30;state.karma+=5;state.mana+=20}}
+    ]
+  },
+  fight_noctis:{
+    chapter:"פרק ג׳ — מרי",
+    text:`הרונה שלך מתלקחת — <em>אש זהובה</em> פורצת מכף ידך. נוקטיס נרתע בשיסוס.\n\nהקרב אכזרי. טפרי צל קורעים בך, אבל הרונה מגנה עליך בהתפרצויות אור. את/ה לא מנצח/ת — אבל <strong>לא נופל/ת</strong>.\n\nנוקטיס שואג. <em>״יש בך רוח, נודד/ת קטן/ה. אבל רוח לבדה לא תסגור את הפרצה.״</em>\n\nהוא נמס לערפל, קולו נשאר: <em>״ניפגש שוב במצודה. אולי אז תבין/י מה באמת את/ה.״</em>`,
+    choices:[
+      {text:"להמשיך קדימה אל המצודה",next:"citadel_approach",effect:()=>{state.power+=5}},
+      {text:"לחפש רמזים במעבר החשוך",next:"dark_clues",effect:()=>{state.mana+=15;state.flags.noctis_clue=true}}
+    ]
+  },
+  negotiate:{
+    chapter:"פרק ג׳ — עסקה מסוכנת",
+    text:`נוקטיס מטה את ראשו, משועשע. <em>״לנהל משא ומתן? כמה... אנושי.״</em>\n\nאת/ה מציע/ה עסקה: זיכרון אחד תמורת אמת אחת. הוא שוקל.\n\n<em>״טוב מאוד. שמך הוא <strong>אלינדרה</strong>. היית מהלומינארי. עכשיו — האמת שלי: מגפת הריק תבלע את העולם תוך שבעה ימים אלא אם הפרצה תיסגר.״</em>\n\nהוא נמוג. <em>״המצודה מחכה. קח/י את הרונה הקטנה שלך. תצטרך/י אותה.״</em>\n\nשמך מהדהד בתודעתך. <em>אלינדרה.</em> זה מרגיש כמו לחזור הביתה.`,
+    choices:[
+      {text:"לצאת אל המצודה השחורה",next:"citadel_approach",effect:()=>{state.flags.knows_name=true;state.karma+=2}},
+      {text:"לחפש קודם את גן השומרת לבני ברית",next:"torch_path",effect:()=>{state.flags.knows_name=true}}
+    ]
+  },
+  tower_path:{
+    chapter:"פרק ג׳ — צריח הלומינארי",
+    text:`המדרגות מסתלסלות לגובה בלתי אפשרי. כשאת/ה מגיע/ה לפסגה, את/ה עומד/ת על ראש <strong>מגדל גבישי</strong> מעל העננים. כוכבים בוערים מעל.\n\nבלב המגדל: <em>אבן זיכרון</em> — כדור מסתחרר של אור. את/ה נוגע/ת בו.\n\nחזיונות מציפים אותך: את/ה רואה את עצמך — <strong>לפני</strong>. קוסם/ת רב/ת עוצמה. טעות נוראית. חותם שנשבר. אשמה. ואז... אמנזיה שכפית על עצמך.\n\n<em>את/ה</em> שברת את החותם. <em>את/ה</em> גרמת למגפת הריק. ומחקת את הזיכרון כדי לברוח מהנטל.\n\nאבל גם השארת לעצמך את הרונה — מפתח לתקן הכול.`,
+    choices:[
+      {text:"לקבל את האמת ולהישבע לתקן",next:"citadel_approach",effect:()=>{state.karma+=10;state.mana+=20;state.power+=10;state.flags.full_truth=true}},
+      {text:"לדחות — זה לא יכול להיות אמיתי",next:"denial_path",effect:()=>{state.hp-=10;state.karma-=2}}
+    ]
+  },
+  other_wanderer:{
+    chapter:"פרק ג׳ — דמות מראה",
+    text:`מירה מהססת. <em>״הנודד האחר... אני מאמינה שהוא עדיין חי. כלוא בתוך המצודה, נטרף מאשמה.״</em>\n\nהיא עוצרת. <em>״יש אומרים שהנודד האחר מחק את הזיכרון של עצמו. שהוא מסתובב בעולם הזה בלי לדעת מה עשה.״</em>\n\nעיניה הכסופות נעוצות בך ברכות בלתי נסבלת.\n\nהמשמעות פוגעת בך כמו מכה פיזית.`,
+    choices:[
+      {text:"״זה אני, נכון.״",next:"citadel_approach",effect:()=>{state.flags.self_aware=true;state.karma+=5;state.mana+=15}},
+      {text:"לסרב להאמין ולצאת אל המצודה",next:"citadel_approach",effect:()=>{state.power+=5}}
+    ]
+  },
+  dark_clues:{
+    chapter:"פרק ג׳ — מתנת הצל",
+    text:`במעבר החשוך, את/ה מוצא/ת <em>גליפים חרוטים</em> שתואמים לרונה שלך. הם מספרים סיפור: הריק לא פלש — הוא <strong>הוזמן</strong>. על ידי קוסם מהלומינארי שחיפש כוח אסור.\n\nבין התחריטים, <strong>גביש צל</strong> קטן פועם. כשאת/ה נוגע/ת בו, קולו של נוקטיס לוחש: <em>״חלק ממני, ניתן ברצון חופשי. תצטרך/י צל כדי להילחם בצל במצודה.״</em>\n\nהגביש מתמזג עם הרונה שלך, ומוסיף <strong>חוטים סגולים</strong> לאור הזהוב.`,
+    choices:[
+      {text:"לצאת אל המצודה השחורה",next:"citadel_approach",effect:()=>{state.power+=10;state.flags.shadow_rune=true}}
+    ]
+  },
+  recruit_myra:{
+    chapter:"פרק ג׳ — ידידה ותיקה",
+    text:`מירה מנידה בראשה. <em>״מקומי כאן, לטפל במה שנותר. אבל—״</em> היא שורקת, ו<strong>שועל רוח</strong> קטן עשוי מלהבות כחולות קופץ מבין הפרחים.\n\n<em>״לומה תדריך אותך. היא מכירה את השבילים הבטוחים.״</em>\n\nהשועלה מקיפה אותך, ואז מתכרבלת אל יד הרונה. חום מתפשט.`,
+    choices:[
+      {text:"ללכת בעקבות לומה אל המצודה",next:"citadel_approach",effect:()=>{state.flags.has_luma=true;state.mana+=10}}
+    ]
+  },
+  recruit_myra_blessed:{
+    chapter:"פרק ג׳ — קשר בלתי שביר",
+    text:`מירה צוחקת. <em>״סירבת לצוף שלי ועכשיו את/ה רוצה את החברה שלי? את/ה יצור מוזר.״</em>\n\nאבל היא קמה, והגן <em>משתחווה</em> לפניה. שורשים נפתחים. פרחים מאירים שביל נסתר.\n\n<em>״לא עזבתי את הגן הזה שלוש מאות שנה. אני מניחה שהגיע הזמן.״</em>\n\nהיא אוחזת בזרועך. יחד, ברכת השומרת פועמת חזק מתמיד.`,
+    choices:[
+      {text:"לצאת יחד אל המצודה השחורה",next:"citadel_approach",effect:()=>{state.flags.myra_joins=true;state.hp+=20;state.mana+=20}}
+    ]
+  },
+  denial_path:{
+    chapter:"פרק ג׳ — בריחה מהאמת",
+    text:`את/ה נרתע/ת מאבן הזיכרון. <em>״לא. זה תעתוע. החושך משקר לי.״</em>\n\nאבל הרונה על ידך מתלקחת — לא בהכחשה, אלא בזיהוי. היא <em>זוכרת</em>, גם אם את/ה לא.\n\nהמגדל מתחיל להתמוטט. אין ברירה אלא לרדת — ולצאת אל היעד היחיד שנותר.`,
+    choices:[
+      {text:"לצאת אל המצודה השחורה",next:"citadel_approach",effect:()=>{state.power+=3}}
+    ]
+  },
+  break_free:{
+    chapter:"פרק ג׳ — שבירת כבלים",
+    text:`הזכרונות שנוקטיס החזיר בוערים כמו אש — אבל בתוכם, את/ה מוצא/ת את <strong>לחש השחרור</strong>.\n\nאת/ה צועק/ת את המילים. אור וצל נלחמים על גופך. נוקטיס מייילל. הברית האפלה <em>מתנפצת</em> — ולוקחת חלק ממך.\n\nאת/ה מתמוטט/ת, מוחלש/ת אבל חופשי/ה. הרונה מהבהבת בין זהב לסגול.\n\nקולו הדועך של נוקטיס: <em>״אמיץ/ה. טיפשי/ת. נראה מה מהשניים — במצודה.״</em>`,
+    choices:[
+      {text:"לאגור כוחות ולצאת אל המצודה",next:"citadel_approach",effect:()=>{state.flags.broke_pact=true;state.karma+=5}}
+    ]
+  },
+  citadel_approach:{
+    chapter:"פרק ד׳ — המצודה השחורה",
+    text:`המצודה מתנשאת מעל שממה של <em>זכוכית אפורה</em> — שם שהריק בלע כל צבע וכל חיים. ברקים זוחלים על צריחיה השחורים.\n\nבשעריה, האוויר מהמהם בטעות. הרונה שלך פועמת בכאב — היא מזהה את המקום הזה. <em>כבר היית כאן.</em>\n\nהדלתות הגדולות אטומות ב<strong>משמר לומינארי</strong>. הרונה שלך היא המפתח.\n\nבפנים, את/ה מרגיש/ה את זה — <strong>הפרצה</strong>. פצע במציאות עצמה, מדמם חושך. ומולה עומד... צל שנושא <em>את פניך</em>.`,
+    choices:[
+      {text:"לעמוד מול צל העצמי בחמלה",next:"ending_redemption",effect:()=>{state.karma+=10}},
+      {text:"להשמיד את הצל בכל הכוח",next:"ending_sacrifice",effect:()=>{state.power+=10}},
+      {text:"להתמזג עם הצל — להפוך לשלם/ה",next:"ending_transcend",effect:()=>{state.mana+=30}}
+    ]
+  },
+  ending_dark_lord:{
+    chapter:"סיום",type:"ending",icon:"👑",title:"ריבון הריק",
+    text:"חיבקת את החושך במלואו. עם נוקטיס לצידך, לא סגרת את הפרצה — הרחבת אותה. הריק שטף פנימה, ועיצבת את העולם מחדש בצל ובאור כוכבים. יופי נורא. ממלכת דמדומים נצחית שבה אתה שולט ללא עוררין. אי שם עמוק בפנים, רונה זהובה עדיין מהבהבת... מחכה.",
+    tag:"סיום 1 מתוך 4 — נתיב השליטה"
+  },
+  ending_redemption:{
+    chapter:"סיום",type:"ending",icon:"🌅",title:"גאולת הנודד",
+    text:"כרעת ברך מול הצל שלך — מול עברך — ולחשת: ״אני מצטער/ת. באתי לתקן את מה ששברנו.״ הצל בכה. וכשנמס לאור, הפרצה החלה להיסגר. זה עלה לך בקסם שלך, ברונה שלך, בזכרונות הכוח. אבל כשיצאת מהמצודה, השמיים היו כחולים שוב. פרחיה של מירה פרחו על פני השממה. את/ה כבר לא מיוחד/ת. וזה מספיק.",
+    tag:"סיום 2 מתוך 4 — נתיב החמלה"
+  },
+  ending_sacrifice:{
+    chapter:"סיום",type:"ending",icon:"⚔️",title:"החותם האחרון",
+    text:"שפכת הכול למכה מעוורת אחת. צל ואור התנגשו — המצודה רעדה. הפרצה נאטמה ברעם שהדהד בכל היבשות. אבל המחיר היה מוחלט. גופך הפך לגביש — חותם חדש, משמר חי מפני הריק. מאות שנים אחר כך, עולי רגל מבקרים את שומר הגביש בלב המצודה. הם מניחים פרחים לרגליך. הם מספרים את סיפורך. את/ה נושא/ת.",
+    tag:"סיום 3 מתוך 4 — נתיב ההקרבה"
+  },
+  ending_transcend:{
+    chapter:"סיום",type:"ending",icon:"✨",title:"הלומינארי מחדש",
+    text:"פתחת את זרועותיך והצל צעד לתוכך. הכאב היה נשגב — כל זיכרון, כל טעות, כל רגע של יופי שמחקת שטף בחזרה. היית שלם/ה. ובשלמות, הבנת: הפרצה לא רק נשברה — היא התאבלה. שרת לה בלשון הלומינארי העתיקה. הפרצה לא נסגרה. היא נרפאה. את/ה הולך/ת בין עולמות עכשיו — נודד/ת, שומר/ת, גשר. הראשון/ה במסדר לומינארי חדש. הקסם חזר לעולם, והפעם, תלמד/י אותו בחוכמה.",
+    tag:"סיום 4 מתוך 4 — נתיב ההתעלות"
+  }
+};
+
+function startGame(){
+  state={hp:100,mana:50,power:10,karma:0,flags:{}};
+  document.getElementById('title-screen').style.display='none';
+  document.getElementById('ending-screen').style.display='none';
+  document.getElementById('story-screen').style.display='flex';
+  updateStats();
+  showScene('start');
+}
+
+function showScene(id){
+  const sc=scenes[id];
+  if(!sc)return;
+  if(sc.type==='ending'){showEnding(sc);return}
+
+  document.getElementById('chapter-tag').textContent=sc.chapter;
+  document.getElementById('story-text').innerHTML=sc.text.replace(/\n/g,'<br>');
+  document.querySelector('.story-content').scrollTo(0,0);
+
+  const box=document.getElementById('choices');
+  box.innerHTML='';
+  const nums=['א','ב','ג','ד'];
+  sc.choices.forEach((c,i)=>{
+    const btn=document.createElement('button');
+    btn.className='choice-btn fade-in';
+    btn.style.animationDelay=`${i*0.12}s`;
+    btn.innerHTML=`<span class="choice-num">${nums[i]}.</span>${c.text}`;
+    btn.onclick=()=>{
+      if(c.effect)c.effect();
+      state.hp=Math.max(0,Math.min(150,state.hp));
+      state.mana=Math.max(0,Math.min(150,state.mana));
+      updateStats();
+      showScene(c.next);
+    };
+    box.appendChild(btn);
+  });
+
+  const st=document.getElementById('story-text');
+  st.style.animation='none';st.offsetHeight;st.style.animation='';
+}
+
+function showEnding(sc){
+  document.getElementById('story-screen').style.display='none';
+  const es=document.getElementById('ending-screen');
+  es.style.display='flex';es.className='fade-in';
+  document.getElementById('ending-icon').textContent=sc.icon;
+  document.getElementById('ending-title').textContent=sc.title;
+  document.getElementById('ending-text').textContent=sc.text;
+  document.getElementById('ending-tag').textContent=sc.tag;
+}
+</script>
+</body>
+</html>
